@@ -119,8 +119,5 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - UI components styled with [Tailwind CSS](https://tailwindcss.com/)
 - Animations powered by [Framer Motion](https://www.framer.com/motion/)
 
-## Contact
-
-Your Name - [@yourtwitter](https://twitter.com/yourtwitter)
-
-Project Link: [https://github.com/yourusername/cineverse](https://github.com/yourusername/cineverse)
+## Disclaimer
+The project was done mostly through vibe coding.
