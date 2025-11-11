@@ -1,21 +1,20 @@
-import { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { 
-  Clock, 
-  Calendar, 
-  Heart, 
-  Play, 
-  Star, 
+import { useState, useEffect } from "react";
+import { useParams, Link } from "react-router-dom";
+import { motion } from "framer-motion";
+import {
+  Clock,
+  Calendar,
+  Heart,
+  Play,
+  Star,
   ArrowLeft,
-  Ticket
-} from 'lucide-react';
-import { getMovieDetails, getImageUrl } from '../api/movieApi';
-import { MovieDetails } from '../types/movie';
-import { useMovie } from '../context/MovieContext';
-import LoadingSpinner from '../components/ui/LoadingSpinner';
-import MovieSlider from '../components/movies/MovieSlider';
-import RatingBadge from '../components/ui/RatingBadge';
+  Ticket,
+} from "lucide-react";
+import { getMovieDetails, getImageUrl } from "../api/movieApi";
+import { MovieDetails } from "../types/movie";
+import { useMovie } from "../context/MovieContext";
+import LoadingSpinner from "../components/ui/LoadingSpinner";
+import MovieSlider from "../components/movies/MovieSlider";
 
 const MovieDetailsPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -23,19 +22,24 @@ const MovieDetailsPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [trailerKey, setTrailerKey] = useState<string | null>(null);
   const [showTrailer, setShowTrailer] = useState(false);
-  const { isFavorite, addToFavorites, removeFromFavorites, addToRecentlyViewed } = useMovie();
+  const {
+    isFavorite,
+    addToFavorites,
+    removeFromFavorites,
+    addToRecentlyViewed,
+  } = useMovie();
 
   useEffect(() => {
     const fetchMovie = async () => {
       if (!id) return;
-      
+
       try {
         setIsLoading(true);
         const movieData = await getMovieDetails(id);
-        
+
         if (movieData) {
           setMovie(movieData);
-          
+
           // Add to recently viewed
           addToRecentlyViewed({
             id: movieData.id,
@@ -45,34 +49,34 @@ const MovieDetailsPage = () => {
             release_date: movieData.release_date,
             vote_average: movieData.vote_average,
             overview: movieData.overview,
-            genre_ids: movieData.genres.map(g => g.id)
+            genre_ids: movieData.genres.map((g) => g.id),
           });
-          
+
           // Find trailer
           const trailer = movieData.videos.results.find(
-            video => video.type === 'Trailer' && video.site === 'YouTube'
+            (video) => video.type === "Trailer" && video.site === "YouTube"
           );
-          
+
           if (trailer) {
             setTrailerKey(trailer.key);
           }
         }
       } catch (error) {
-        console.error('Error fetching movie details:', error);
+        console.error("Error fetching movie details:", error);
       } finally {
         setIsLoading(false);
       }
     };
-    
+
     fetchMovie();
-    
+
     // Scroll to top when movie ID changes
     window.scrollTo(0, 0);
   }, [id, addToRecentlyViewed]);
 
   const toggleFavorite = () => {
     if (!movie) return;
-    
+
     const movieBasic = {
       id: movie.id,
       title: movie.title,
@@ -81,9 +85,9 @@ const MovieDetailsPage = () => {
       release_date: movie.release_date,
       vote_average: movie.vote_average,
       overview: movie.overview,
-      genre_ids: movie.genres.map(g => g.id)
+      genre_ids: movie.genres.map((g) => g.id),
     };
-    
+
     if (isFavorite(movie.id)) {
       removeFromFavorites(movie.id);
     } else {
@@ -118,8 +122,12 @@ const MovieDetailsPage = () => {
 
   // Format release date
   const formatReleaseDate = (dateString: string) => {
-    const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'long', day: 'numeric' };
-    return new Date(dateString).toLocaleDateString('en-US', options);
+    const options: Intl.DateTimeFormatOptions = {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    };
+    return new Date(dateString).toLocaleDateString("en-US", options);
   };
 
   return (
@@ -127,15 +135,15 @@ const MovieDetailsPage = () => {
       {/* Hero section with backdrop */}
       <div className="relative w-full h-[60vh] min-h-[400px]">
         <img
-          src={getImageUrl(movie.backdrop_path, 'original')}
+          src={getImageUrl(movie.backdrop_path, "original")}
           alt={`${movie.title} backdrop`}
           className="absolute inset-0 w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-dark-300 via-dark-300/70 to-transparent" />
-        
+
         {/* Back button */}
         <div className="absolute top-4 left-4 z-10">
-          <Link 
+          <Link
             to="/"
             className="bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition-colors"
             aria-label="Back to home"
@@ -143,7 +151,7 @@ const MovieDetailsPage = () => {
             <ArrowLeft className="h-6 w-6" />
           </Link>
         </div>
-        
+
         {/* Play trailer button */}
         {trailerKey && (
           <button
@@ -155,7 +163,7 @@ const MovieDetailsPage = () => {
           </button>
         )}
       </div>
-      
+
       <div className="container-fluid">
         <div className="flex flex-col md:flex-row md:gap-8 -mt-32 relative z-10">
           {/* Poster */}
@@ -166,13 +174,13 @@ const MovieDetailsPage = () => {
               className="rounded-lg overflow-hidden shadow-xl"
             >
               <img
-                src={getImageUrl(movie.poster_path, 'w500')}
+                src={getImageUrl(movie.poster_path, "w500")}
                 alt={`${movie.title} poster`}
                 className="w-full h-auto"
               />
             </motion.div>
           </div>
-          
+
           {/* Details */}
           <div className="w-full md:w-3/4">
             <motion.div
@@ -183,8 +191,8 @@ const MovieDetailsPage = () => {
             >
               <div className="flex items-center gap-3 mb-2">
                 {movie.genres.slice(0, 3).map((genre) => (
-                  <Link 
-                    key={genre.id} 
+                  <Link
+                    key={genre.id}
                     to={`/genre/${genre.id}`}
                     className="text-xs font-medium px-3 py-1 bg-gray-200 dark:bg-dark-100 rounded-full hover:bg-primary-100 dark:hover:bg-primary-900 transition-colors"
                   >
@@ -192,62 +200,72 @@ const MovieDetailsPage = () => {
                   </Link>
                 ))}
               </div>
-              
-              <h1 className="text-3xl md:text-4xl font-bold mb-2">{movie.title}</h1>
-              
+
+              <h1 className="text-3xl md:text-4xl font-bold mb-2">
+                {movie.title}
+              </h1>
+
               {movie.tagline && (
-                <p className="text-gray-600 dark:text-gray-400 italic mb-4">{movie.tagline}</p>
+                <p className="text-gray-600 dark:text-gray-400 italic mb-4">
+                  {movie.tagline}
+                </p>
               )}
-              
+
               <div className="flex items-center gap-4 mb-6 text-sm">
                 <div className="flex items-center gap-1">
                   <Star className="h-4 w-4 text-yellow-500" />
                   <span>{movie.vote_average.toFixed(1)}/10</span>
                 </div>
-                
+
                 <div className="flex items-center gap-1">
                   <Clock className="h-4 w-4" />
                   <span>{formatRuntime(movie.runtime)}</span>
                 </div>
-                
+
                 <div className="flex items-center gap-1">
                   <Calendar className="h-4 w-4" />
                   <span>{formatReleaseDate(movie.release_date)}</span>
                 </div>
               </div>
-              
+
               <div className="mb-6">
                 <h2 className="text-xl font-bold mb-2">Overview</h2>
                 <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
                   {movie.overview}
                 </p>
               </div>
-              
+
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
                 <div>
-                  <h3 className="text-sm text-gray-500 dark:text-gray-400">Status</h3>
+                  <h3 className="text-sm text-gray-500 dark:text-gray-400">
+                    Status
+                  </h3>
                   <p className="font-medium">{movie.status}</p>
                 </div>
-                
+
                 {movie.budget > 0 && (
                   <div>
-                    <h3 className="text-sm text-gray-500 dark:text-gray-400">Budget</h3>
+                    <h3 className="text-sm text-gray-500 dark:text-gray-400">
+                      Budget
+                    </h3>
                     <p className="font-medium">
                       ${movie.budget.toLocaleString()}
                     </p>
                   </div>
                 )}
-                
+
                 {movie.revenue > 0 && (
                   <div>
-                    <h3 className="text-sm text-gray-500 dark:text-gray-400">Revenue</h3>
+                    <h3 className="text-sm text-gray-500 dark:text-gray-400">
+                      Revenue
+                    </h3>
                     <p className="font-medium">
                       ${movie.revenue.toLocaleString()}
                     </p>
                   </div>
                 )}
               </div>
-              
+
               <div className="flex flex-wrap gap-4 mt-8">
                 {trailerKey && (
                   <button
@@ -258,21 +276,31 @@ const MovieDetailsPage = () => {
                     <span>Watch Trailer</span>
                   </button>
                 )}
-                
+
                 <button
                   onClick={toggleFavorite}
                   className={`btn flex items-center gap-2 ${
-                    isFavorite(movie.id) 
-                      ? 'bg-accent-600 hover:bg-accent-700 text-white' 
-                      : 'bg-gray-200 hover:bg-gray-300 dark:bg-dark-100 dark:hover:bg-dark-200'
+                    isFavorite(movie.id)
+                      ? "bg-accent-600 hover:bg-accent-700 text-white"
+                      : "bg-gray-200 hover:bg-gray-300 dark:bg-dark-100 dark:hover:bg-dark-200"
                   }`}
                 >
-                  <Heart className={`h-4 w-4 ${isFavorite(movie.id) ? 'fill-current' : ''}`} />
-                  <span>{isFavorite(movie.id) ? 'Remove from Favorites' : 'Add to Favorites'}</span>
+                  <Heart
+                    className={`h-4 w-4 ${
+                      isFavorite(movie.id) ? "fill-current" : ""
+                    }`}
+                  />
+                  <span>
+                    {isFavorite(movie.id)
+                      ? "Remove from Favorites"
+                      : "Add to Favorites"}
+                  </span>
                 </button>
-                
+
                 <a
-                  href={`https://www.fandango.com/search?q=${encodeURIComponent(movie.title)}`}
+                  href={`https://www.fandango.com/search?q=${encodeURIComponent(
+                    movie.title
+                  )}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="btn bg-secondary-600 hover:bg-secondary-700 text-white flex items-center gap-2"
@@ -282,21 +310,26 @@ const MovieDetailsPage = () => {
                 </a>
               </div>
             </motion.div>
-            
+
             {/* Cast */}
             <div className="mt-8">
               <h2 className="text-2xl font-bold mb-4">Cast</h2>
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
                 {movie.credits.cast.slice(0, 10).map((person) => (
-                  <div key={person.id} className="bg-white dark:bg-dark-300 rounded-lg shadow overflow-hidden">
+                  <div
+                    key={person.id}
+                    className="bg-white dark:bg-dark-300 rounded-lg shadow overflow-hidden"
+                  >
                     <img
-                      src={getImageUrl(person.profile_path, 'w185')}
+                      src={getImageUrl(person.profile_path, "w185")}
                       alt={person.name}
                       className="w-full h-auto aspect-[2/3] object-cover"
                     />
                     <div className="p-3">
                       <h3 className="font-medium text-sm">{person.name}</h3>
-                      <p className="text-gray-600 dark:text-gray-400 text-xs">{person.character}</p>
+                      <p className="text-gray-600 dark:text-gray-400 text-xs">
+                        {person.character}
+                      </p>
                     </div>
                   </div>
                 ))}
@@ -304,18 +337,18 @@ const MovieDetailsPage = () => {
             </div>
           </div>
         </div>
-        
+
         {/* Similar Movies */}
         {movie.similar.results.length > 0 && (
           <div className="mt-12 pb-12">
-            <MovieSlider 
-              title="Similar Movies" 
-              movies={movie.similar.results} 
+            <MovieSlider
+              title="Similar Movies"
+              movies={movie.similar.results}
             />
           </div>
         )}
       </div>
-      
+
       {/* Trailer Modal */}
       {showTrailer && trailerKey && (
         <div className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4">
@@ -342,14 +375,14 @@ const MovieDetailsPage = () => {
 };
 
 const X = ({ className }: { className?: string }) => (
-  <svg 
-    xmlns="http://www.w3.org/2000/svg" 
-    viewBox="0 0 24 24" 
-    fill="none" 
-    stroke="currentColor" 
-    strokeWidth="2" 
-    strokeLinecap="round" 
-    strokeLinejoin="round" 
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
     className={className}
   >
     <path d="M18 6L6 18"></path>
